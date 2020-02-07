@@ -2,25 +2,33 @@
 //
 // Copyright (c) 2020 Regis Boudinot
 
+mod filedata;
 mod investigator;
 
-use rayon::prelude::*;
-use std::io::Result;
-use std::time::Duration;
-use walkdir::WalkDir;
+use filedata::FileData;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let mut files = vec![];
-    let mut timestamps: Vec<Result<Duration>> = vec![];
 
-    for entry in WalkDir::new("artifact").into_iter().filter_map(|e| e.ok()) {
-        files.push(entry);
+    for entry in std::fs::read_dir("artifact")? {
+        match entry {
+            Ok(file) => {
+                let modified = match investigator::investigate(&file.path()) {
+                    Ok(result) => result,
+                    Err(err) => panic!(err),
+                };
+                let file_data = match file.path().to_str() {
+                    Some(str) => FileData::new(modified, String::from(str)),
+                    None => panic!("no path string"),
+                };
+
+                files.push(file_data);
+            }
+            Err(err) => panic!(err),
+        }
     }
 
-    files
-        .par_iter()
-        .map(|file| investigator::investigate(file.path()))
-        .collect_into_vec(&mut timestamps);
+    println!("{:?}", files);
 
-    println!("{:?}", timestamps);
+    Ok(())
 }
