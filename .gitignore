@@ -4,3 +4,5 @@
 .env
 artifact
 .DS_Store
+.fwar_results*
+tmp
