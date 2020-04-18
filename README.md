@@ -2,7 +2,7 @@
 
 _alpha stage_
 
-File System War. Scan files and find bad actors. Memory safety is paramount.
+File System War. Scan source code files and find bad actors. Memory safety is paramount.
 
 #### use
 
