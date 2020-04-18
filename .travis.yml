@@ -1,0 +1,17 @@
+
+jobs:
+  include:
+    - stage: artifact
+      - language: node
+        node_js:
+          - 10
+        script:
+          - git clone https://github.com/selfup/hyperap-one artifact
+          - npm install --no-optional
+
+    -stage: run
+      - language: rust
+        rust:
+          - stable
+        script:
+          - ./scripts/run.release.sh

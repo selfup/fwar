@@ -7,12 +7,38 @@ mod investigator;
 
 use filedata::FileData;
 
-fn main() -> std::io::Result<()> {
-    let mut files = vec![];
+use std::io::{Error, ErrorKind};
+use std::path::Path;
 
-    for entry in std::fs::read_dir("artifact")? {
+fn main() -> std::io::Result<()> {
+    let mut files: &mut Vec<filedata::FileData> = &mut vec![];
+
+    match investigate_dir(&Path::new("artifact"), &mut files) {
+        Ok(_result) => (),
+        Err(err) => panic!(err),
+    };
+
+    println!("{}", files.len());
+
+    Ok(())
+}
+
+fn investigate_dir<'a>(dir: &Path, files: &mut Vec<filedata::FileData>) -> std::io::Result<()> {
+    for entry in std::fs::read_dir(dir)? {
         match entry {
             Ok(file) => {
+                if file.path().is_dir() {
+                    let dir_path = file.path();
+                    match investigate_dir(&dir_path, files) {
+                        Ok(_result) => (),
+                        Err(err) => {
+                            let error = format!("{:?}", err);
+                            println!("{}", error);
+                            Error::new(ErrorKind::Other, error);
+                        }
+                    };
+                }
+
                 let modified = match investigator::investigate(&file.path()) {
                     Ok(result) => result,
                     Err(err) => panic!(err),
@@ -27,8 +53,6 @@ fn main() -> std::io::Result<()> {
             Err(err) => panic!(err),
         }
     }
-
-    println!("{:?}", files);
 
     Ok(())
 }
