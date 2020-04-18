@@ -1,7 +1,9 @@
 # fwar
 
-**f**ile system **w**atcher that **a**utomatically **r**eloads a given command.
+_alpha stage_
 
-:warning: alpha stage software do not use :warning:
+File System War. Scan files and find bad actors. Memory safety is paramount.
 
-attempting to scan a lot of files
+Assumes a directory called `artifact` is in the current directory. Scans said directory.
+
+For testing purposes this will pull down [hyperapp-one](https://github.com/selfup/hyperapp-one), run `npm install` and then scan all ~50k files (source code and node_modules).
